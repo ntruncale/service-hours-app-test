@@ -6,9 +6,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      # Placeholder for tests only; real keys live in the hosting service's settings.
+      SECRET_KEY: ci-only-not-a-real-secret
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip

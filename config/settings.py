@@ -37,9 +37,10 @@ def env_list(name: str) -> list[str]:
 
 
 DEBUG = env_bool("DEBUG", False)
+TESTING = "PYTEST_VERSION" in os.environ  # set by pytest
 SECRET_KEY = os.environ.get("SECRET_KEY", "")
 if not SECRET_KEY:
-    if DEBUG or os.environ.get("PYTEST_VERSION"):
+    if DEBUG or TESTING:
         SECRET_KEY = "dev-only-insecure-key"
     else:
         raise RuntimeError("Set the SECRET_KEY environment variable.")
@@ -116,7 +117,7 @@ STORAGES = {
     "staticfiles": {
         "BACKEND": (
             "django.contrib.staticfiles.storage.StaticFilesStorage"
-            if DEBUG or os.environ.get("PYTEST_VERSION")
+            if DEBUG or TESTING
             else "whitenoise.storage.CompressedManifestStaticFilesStorage"
         )
     },
@@ -127,7 +128,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 
 # --- Security for production -------------------------------------------------
-if not DEBUG:
+# (Skipped under pytest: the test server speaks plain HTTP.)
+if not DEBUG and not TESTING:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
     SESSION_COOKIE_SECURE = True

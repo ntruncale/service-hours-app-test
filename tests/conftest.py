@@ -23,6 +23,12 @@ def _clean_cache(settings):
     cache.clear()
     settings.SITE_URL = "https://hours.test"
     settings.BLOCKED_SUPERVISOR_DOMAINS = ["students.school.test"]
+    # Tests talk plain HTTP; production's HTTPS redirect would turn every request into a 301
+    # and let some tests pass for the wrong reason. Same behaviour with or without a .env file.
+    settings.SECURE_SSL_REDIRECT = False
+    settings.SESSION_COOKIE_SECURE = False
+    settings.CSRF_COOKIE_SECURE = False
+    settings.SECURE_HSTS_SECONDS = 0
     yield
     cache.clear()
 
