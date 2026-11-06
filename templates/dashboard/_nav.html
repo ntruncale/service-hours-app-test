@@ -1,0 +1,20 @@
+<div class="actions no-print" style="justify-content:space-between;align-items:flex-end">
+  <div><h1>Service hours dashboard</h1><p class="sub">{{ year_label }} school year{% if selected_grade %} · Grade {{ selected_grade }}{% elif visible_grades %} · Grade{{ visible_grades|pluralize }} {{ visible_grades|join:", " }}{% endif %}</p></div>
+  {% if visible_grades|length > 1 %}
+  <div class="tabs">
+    <a href="?{% if view %}view={{ view }}{% endif %}" class="{% if not selected_grade %}on{% endif %}">All grades</a>
+    {% for g in visible_grades %}<a href="?grade={{ g }}{% if view %}&view={{ view }}{% endif %}" class="{% if selected_grade == g %}on{% endif %}">Grade {{ g }}</a>{% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% with gq=selected_grade|default_if_none:"" %}
+<nav class="subnav no-print">
+  <a href="{% url 'dashboard:roster' %}{% if gq %}?grade={{ gq }}{% endif %}" class="{% if active == 'roster' %}on{% endif %}">Students</a>
+  <a href="{% url 'dashboard:waiting' %}{% if gq %}?grade={{ gq }}{% endif %}" class="{% if active == 'waiting' %}on{% endif %}">Waiting on supervisor</a>
+  <a href="{% url 'dashboard:flagged' %}{% if gq %}?grade={{ gq }}{% endif %}" class="{% if active == 'flagged' %}on{% endif %}">Flagged &amp; declined</a>
+  <a href="{% url 'dashboard:summary' %}{% if gq %}?grade={{ gq }}{% endif %}" class="{% if active == 'summary' %}on{% endif %}">Summary</a>
+  <a href="{% url 'dashboard:organizations' %}{% if gq %}?grade={{ gq }}{% endif %}" class="{% if active == 'organizations' %}on{% endif %}">Organizations</a>
+  <a href="{% url 'dashboard:supervisor' %}{% if gq %}?grade={{ gq }}{% endif %}" class="{% if active == 'supervisor' %}on{% endif %}">Supervisor lookup</a>
+</nav>
+{% endwith %}
+{% if not visible_grades %}<div class="card">You aren't assigned to a grade yet. Ask an administrator to add a grade assignment for you.</div>{% endif %}

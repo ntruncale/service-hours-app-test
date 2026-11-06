@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Flagged and declined{% endblock %}
+{% block content %}
+{% include "dashboard/_nav.html" %}
+<h2>Flagged for a second look</h2>
+<p class="small muted">Flags are automatic hints, not accusations. Approve as teacher on the student's page once you've checked.</p>
+<div class="card table-wrap" style="padding:0"><table>
+  <thead><tr><th>Student</th><th>Date</th><th class="num">Hours</th><th>Organization</th><th>Supervisor</th><th>Status and flags</th></tr></thead>
+  <tbody>{% for e in flagged %}{% include "dashboard/_entry_row.html" with show_student=True %}{% empty %}<tr><td colspan="6" class="center muted">No flagged entries.</td></tr>{% endfor %}</tbody>
+</table></div>
+<h2>Declined by supervisor</h2>
+<div class="card table-wrap" style="padding:0"><table>
+  <thead><tr><th>Student</th><th>Date</th><th class="num">Hours</th><th>Organization</th><th>Supervisor</th><th>Status and flags</th></tr></thead>
+  <tbody>{% for e in declined %}{% include "dashboard/_entry_row.html" with show_student=True %}{% empty %}<tr><td colspan="6" class="center muted">No declined entries.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

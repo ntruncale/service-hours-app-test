@@ -1,0 +1,7 @@
+<div style="font-family:Arial,sans-serif;font-size:16px;line-height:1.5;color:#1d2430;max-width:560px">
+<p>Hi {{ entry.student.first_name|default:entry.student.display_name }},</p>
+<p>Your <strong>{{ entry.hours|floatformat:"-2" }} hours</strong> at {{ entry.organization }} on {{ entry.service_date|date:"M j, Y" }} were <strong>{% if entry.counts %}approved{% else %}declined{% endif %}</strong>.</p>
+{% if comment %}<p>Note: {{ comment }}</p>{% endif %}
+{% if not entry.counts %}<p>You can fix the entry and resubmit it in the app.</p>{% endif %}
+<p><a href="{{ url }}">Open Service Hours</a></p>
+</div>

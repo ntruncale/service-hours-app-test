@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load hours_extras %}
+{% block title %}Organizations{% endblock %}
+{% block content %}
+{% include "dashboard/_nav.html" %}
+<div class="tabs">
+  <a href="?{% if selected_grade %}grade={{ selected_grade }}{% endif %}" class="{% if not all_years %}on{% endif %}">This school year</a>
+  <a href="?years=all{% if selected_grade %}&grade={{ selected_grade }}{% endif %}" class="{% if all_years %}on{% endif %}">All years</a>
+</div>
+<div class="card table-wrap" style="padding:0"><table>
+  <thead><tr><th>Organization</th><th class="num">Approved hours</th><th class="num">Students</th><th class="num">Entries</th></tr></thead>
+  <tbody>{% for o in orgs %}<tr><td>{{ o.name }}</td><td class="num">{{ o.hours|hrs }}</td><td class="num">{{ o.students }}</td><td class="num">{{ o.entries }}</td></tr>
+  {% empty %}<tr><td colspan="4" class="center muted">No approved hours yet.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

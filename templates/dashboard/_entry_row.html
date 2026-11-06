@@ -1,0 +1,9 @@
+{% load hours_extras %}
+<tr>
+  {% if show_student %}<td><a href="{% url 'dashboard:student' e.student.pk %}">{{ e.student.display_name }}</a><br><span class="small muted">Grade {{ e.student.current_grade }}</span></td>{% endif %}
+  <td>{{ e.service_date|date:"M j, Y" }}</td>
+  <td class="num">{{ e.hours|hrs }}</td>
+  <td>{{ e.organization }}<br><span class="small muted">{{ e.location }}</span></td>
+  <td>{{ e.supervisor_name }}<br><a class="small" href="{% url 'dashboard:supervisor' %}?email={{ e.supervisor_email|urlencode }}">{{ e.supervisor_email }}</a>{% if e.supervisor_phone %}<br><span class="small">{{ e.supervisor_phone }}</span>{% endif %}</td>
+  <td>{% include "_status.html" %}{% for f in e.flags %}<br><span class="badge flag">{{ f }}</span>{% endfor %}</td>
+</tr>

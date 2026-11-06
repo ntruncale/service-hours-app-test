@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load hours_extras %}
+{% block title %}Confirm service hours{% endblock %}
+{% block content %}
+<div class="narrow">
+<h1>Confirm service hours</h1>
+<p class="sub">{{ entry.student.display_name }}, a student at {{ SCHOOL_NAME }}, listed you as their supervisor. Please confirm whether this is accurate.</p>
+<div class="card">
+  <table>
+    <tr><th>Student</th><td>{{ entry.student.display_name }}</td></tr>
+    <tr><th>Date</th><td>{{ entry.service_date|date:"l, F j, Y" }}</td></tr>
+    <tr><th>Hours</th><td><strong>{{ entry.hours|hrs }}</strong></td></tr>
+    <tr><th>Organization</th><td>{{ entry.organization }}</td></tr>
+    <tr><th>Location</th><td>{{ entry.location }}</td></tr>
+    <tr><th>What they did</th><td>{{ entry.description }}</td></tr>
+    <tr><th>Supervisor listed</th><td>{{ entry.supervisor_name }} ({{ req.sent_to }})</td></tr>
+  </table>
+</div>
+<form method="post" class="card">{% csrf_token %}
+  {% include "_form_field.html" with field=form.typed_name %}
+  {% include "_form_field.html" with field=form.comment %}
+  {{ form.decision.errors }}
+  <div class="actions" style="margin-top:18px">
+    <button name="decision" value="approve">Approve these hours</button>
+    <button name="decision" value="decline" class="danger">I can't confirm this</button>
+  </div>
+  <p class="small muted">By approving, you confirm the student completed this service. This link works once and expires {{ req.expires_at|date:"M j" }}.</p>
+</form>
+</div>
+{% endblock %}

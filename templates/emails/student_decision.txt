@@ -1,0 +1,10 @@
+Subject: Your service hours at {{ entry.organization }} were {% if entry.counts %}approved{% else %}declined{% endif %}
+Hi {{ entry.student.first_name|default:entry.student.display_name }},
+
+Your {{ entry.hours|floatformat:"-2" }} hours at {{ entry.organization }} on {{ entry.service_date|date:"M j, Y" }} were {% if entry.counts %}approved{% else %}declined{% endif %}.
+{% if comment %}
+Note: {{ comment }}
+{% endif %}{% if not entry.counts %}
+You can fix the entry and resubmit it in the app.{% endif %}
+
+{{ url }}

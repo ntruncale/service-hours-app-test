@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="narrow card center">
+  <h1>Service Hours</h1>
+  <p class="sub">Log your community service and track your progress toward graduation.</p>
+  <a class="btn" href="{% url 'accounts:microsoft_login' %}">Sign in with your school Microsoft account</a>
+  {% if DEV_LOGIN_ENABLED %}
+    <p class="small muted" style="margin-top:24px">Developer mode is on. <a href="{% url 'accounts:dev_login' %}">Sign in as a test user</a></p>
+  {% endif %}
+</div>
+{% endblock %}

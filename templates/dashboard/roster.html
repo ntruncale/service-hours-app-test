@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load hours_extras %}
+{% block title %}Students{% endblock %}
+{% block content %}
+{% include "dashboard/_nav.html" %}
+<div class="tabs" role="tablist" aria-label="Filter students">
+  {% for key, label in views.items %}
+    <a href="?view={{ key }}{% if selected_grade %}&grade={{ selected_grade }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}" class="{% if view == key %}on{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+<form class="toolbar" method="get">
+  <input type="hidden" name="view" value="{{ view }}">
+  {% if selected_grade %}<input type="hidden" name="grade" value="{{ selected_grade }}">{% endif %}
+  <div><label for="q" class="small">Search</label><input id="q" name="q" value="{{ q }}" placeholder="Name or email"></div>
+  <div><label for="sort" class="small">Sort by</label>
+    <select id="sort" name="sort" onchange="this.form.submit()">
+      <option value="remaining" {% if sort == 'remaining' %}selected{% endif %}>Most hours remaining</option>
+      <option value="name" {% if sort == 'name' %}selected{% endif %}>Last name</option>
+      <option value="approved" {% if sort == 'approved' %}selected{% endif %}>Most approved hours</option>
+      <option value="grade" {% if sort == 'grade' %}selected{% endif %}>Grade</option>
+    </select></div>
+  <button class="secondary">Apply</button>
+  <a class="btn secondary" href="?{{ request.GET.urlencode }}&format=csv">Download CSV</a>
+</form>
+<p class="small muted">Showing {{ rows|length }} of {{ total_students }} students.</p>
+<div class="card table-wrap" style="padding:0">
+<table>
+  <thead><tr>
+    <th>Student</th><th class="num">Grade</th><th class="num">Approved</th><th class="num">Pending</th>
+    <th class="num">Required</th><th class="num">Remaining</th><th>Progress</th><th class="num">This year</th>
+  </tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td><a href="{% url 'dashboard:student' r.student.pk %}">{{ r.student.last_name }}, {{ r.student.first_name }}</a>
+        {% if r.behind %}<span class="badge behind">Behind pace</span>{% endif %}
+        {% if r.entries_this_year == 0 %}<span class="badge flag">No entries this year</span>{% endif %}</td>
+      <td class="num">{{ r.grade }}</td>
+      <td class="num">{{ r.progress.approved|hrs }}</td>
+      <td class="num">{{ r.progress.pending|hrs }}</td>
+      <td class="num">{{ r.progress.required|hrs }}</td>
+      <td class="num"><strong>{{ r.progress.remaining|hrs }}</strong></td>
+      <td style="min-width:90px"><div class="progress {% if r.progress.done %}done{% endif %}" aria-label="{{ r.progress.percent }}%"><span style="width:{{ r.progress.percent }}%"></span></div><span class="small muted">{{ r.progress.percent }}%</span></td>
+      <td class="num">{{ r.progress.this_year|hrs }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="8" class="center muted">No students match this view.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="small muted">"Required" is the total due by the end of the student's current grade. "Behind pace" means approved hours are below where they should be at this point in the school year.</p>
+{% endblock %}

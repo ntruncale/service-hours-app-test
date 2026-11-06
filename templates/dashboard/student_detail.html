@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load hours_extras %}
+{% block title %}{{ student.display_name }}{% endblock %}
+{% block content %}
+<p class="no-print"><a href="{% url 'dashboard:roster' %}">&larr; All students</a></p>
+<div class="actions" style="justify-content:space-between">
+  <div><h1>{{ student.display_name }}</h1>
+  <p class="sub">{{ student.email }} · Class of {{ student.graduation_year }}{% if student.current_grade %} · Grade {{ student.current_grade }}{% endif %}</p></div>
+  <button class="secondary no-print" onclick="window.print()">Print report</button>
+</div>
+<div class="card"><div class="grid">
+  <div><div class="stat">{{ progress.approved|hrs }}</div><div class="stat-label">approved hours (all years)</div></div>
+  <div><div class="stat">{{ progress.required|hrs }}</div><div class="stat-label">required to date</div></div>
+  <div><div class="stat">{{ progress.remaining|hrs }}</div><div class="stat-label">remaining</div></div>
+  <div><div class="stat">{{ progress.pending|hrs }}</div><div class="stat-label">pending</div></div>
+</div></div>
+
+{% for label, b in years %}
+<h2>{{ label }} · {{ b.approved|hrs }} approved hours</h2>
+<div class="card">
+  {% for e in b.entries %}
+  <div class="entry">
+    <div class="entry-head">
+      <div><strong>{{ e.organization }}</strong> · {{ e.hours|hrs }} h · {{ e.service_date|date:"M j, Y" }}<br>
+        <span class="small muted">{{ e.location }} · {{ e.get_category_display }} · Supervisor {{ e.supervisor_name }}, <a href="{% url 'dashboard:supervisor' %}?email={{ e.supervisor_email|urlencode }}">{{ e.supervisor_email }}</a>{% if e.supervisor_phone %}, {{ e.supervisor_phone }}{% endif %}</span></div>
+      <div>{% include "_status.html" %}</div>
+    </div>
+    <p class="small" style="margin:6px 0">{{ e.description }}</p>
+    {% for f in e.flags %}<span class="badge flag">{{ f }}</span> {% endfor %}
+    {% with req=e.approval_requests.all.0 %}{% if req.responded_at %}
+      <p class="small">Supervisor signed "{{ req.supervisor_typed_name }}" on {{ req.responded_at|date:"M j, Y g:i a" }}{% if req.supervisor_comment %}: "{{ req.supervisor_comment }}"{% endif %}</p>
+    {% endif %}{% endwith %}
+    {% if e.reviewed_by %}<p class="small">Reviewed by {{ e.reviewed_by.display_name }}: {{ e.review_note }}</p>{% endif %}
+    <details class="no-print"><summary class="small">History and teacher actions</summary>
+      <ul class="small">{% for a in e.audit.all %}<li>{{ a.created_at|date:"M j, Y g:i a" }} · {{ a.action }}{% if a.actor %} by {{ a.actor.display_name }}{% elif a.actor_label %} by {{ a.actor_label }}{% endif %}{% if a.detail %} · {{ a.detail }}{% endif %}</li>{% endfor %}</ul>
+      <form method="post" action="{% url 'dashboard:entry_review' e.pk %}">{% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <label for="note-{{ e.pk }}" class="small">Reason (required, saved in history and sent to the student)</label>
+        <input id="note-{{ e.pk }}" name="note" placeholder="e.g. Confirmed by phone with supervisor on 11/4">
+        <div class="actions" style="margin-top:8px">
+          {% if not e.counts %}<button class="small" name="decision" value="approve">Approve as teacher</button>{% endif %}
+          {% if e.status != 'declined' %}<button class="small danger" name="decision" value="decline">Decline</button>{% endif %}
+        </div>
+      </form>
+      {% if e.status == 'pending' or e.status == 'expired' %}
+      <form method="post" action="{% url 'dashboard:entry_resend' e.pk %}" style="margin-top:8px">{% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}"><button class="small secondary">Resend link to supervisor</button></form>
+      {% endif %}
+    </details>
+  </div>
+  {% endfor %}
+</div>
+{% empty %}
+<div class="card center muted">No entries yet.</div>
+{% endfor %}
+<p class="small muted">Printed {% now "M j, Y" %}</p>
+{% endblock %}

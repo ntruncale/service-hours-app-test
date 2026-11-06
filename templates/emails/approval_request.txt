@@ -1,0 +1,17 @@
+Subject: {% if reminder %}Reminder: {% endif %}Please confirm {{ student.display_name }}'s service hours
+Hello {{ entry.supervisor_name }},
+
+{{ student.display_name }}, a student at {{ SCHOOL_NAME }}, listed you as the supervisor for this community service:
+
+  Date: {{ entry.service_date|date:"F j, Y" }}
+  Hours: {{ entry.hours|floatformat:"-2" }}
+  Organization: {{ entry.organization }}
+  What they did: {{ entry.description }}
+
+Please confirm or decline here (no account needed):
+{{ url }}
+
+The link works once and expires in {{ days }} days. If you don't know this student, you can ignore this email or press "I can't confirm this".
+
+Thank you for supporting our students,
+{{ SCHOOL_NAME }}

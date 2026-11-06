@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load hours_extras %}
+{% block title %}Waiting on supervisor{% endblock %}
+{% block content %}
+{% include "dashboard/_nav.html" %}
+<div class="tabs">
+  <a href="?{% if selected_grade %}grade={{ selected_grade }}{% endif %}" class="{% if not show_all %}on{% endif %}">Older than {{ stale_days }} days</a>
+  <a href="?all=1{% if selected_grade %}&grade={{ selected_grade }}{% endif %}" class="{% if show_all %}on{% endif %}">All pending</a>
+</div>
+<div class="card table-wrap" style="padding:0">
+<table>
+  <thead><tr><th>Student</th><th>Date</th><th class="num">Hours</th><th>Organization</th><th>Supervisor</th><th>Link sent</th><th></th></tr></thead>
+  <tbody>
+  {% for e in entries %}
+  <tr>
+    <td><a href="{% url 'dashboard:student' e.student.pk %}">{{ e.student.display_name }}</a></td>
+    <td>{{ e.service_date|date:"M j" }}</td><td class="num">{{ e.hours|hrs }}</td><td>{{ e.organization }}</td>
+    <td>{{ e.supervisor_name }}<br><span class="small">{{ e.supervisor_email }}</span>{% if e.supervisor_phone %}<br><span class="small">{{ e.supervisor_phone }}</span>{% endif %}</td>
+    <td>{{ e.sent|timesince }} ago</td>
+    <td><form method="post" action="{% url 'dashboard:entry_resend' e.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button class="small secondary">Resend</button></form></td>
+  </tr>
+  {% empty %}<tr><td colspan="7" class="center muted">Nothing waiting. </td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

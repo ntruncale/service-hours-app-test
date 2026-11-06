@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<div class="narrow card">
+  <h1>Welcome, {{ user.first_name|default:user.display_name }}</h1>
+  <p class="sub">One question before you start. Your teacher can correct this later if needed.</p>
+  <form method="post">{% csrf_token %}
+    {% include "_form_field.html" with field=form.graduation_year %}
+    <p><button>Continue</button></p>
+  </form>
+</div>
+{% endblock %}

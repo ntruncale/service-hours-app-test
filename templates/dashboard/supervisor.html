@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Supervisor lookup{% endblock %}
+{% block content %}
+{% include "dashboard/_nav.html" %}
+<form class="toolbar" method="get">
+  {% if selected_grade %}<input type="hidden" name="grade" value="{{ selected_grade }}">{% endif %}
+  <div><label for="email" class="small">Supervisor email (or part of it)</label><input id="email" name="email" value="{{ email }}" type="search" autocapitalize="off"></div>
+  <button>Search</button>
+</form>
+{% if email %}
+<p class="small muted">{{ entries|length }} entries list a supervisor matching "{{ email }}".</p>
+<div class="card table-wrap" style="padding:0"><table>
+  <thead><tr><th>Student</th><th>Date</th><th class="num">Hours</th><th>Organization</th><th>Supervisor</th><th>Status and flags</th></tr></thead>
+  <tbody>{% for e in entries %}{% include "dashboard/_entry_row.html" with show_student=True %}{% empty %}<tr><td colspan="6" class="center muted">No matches.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endif %}
+{% endblock %}

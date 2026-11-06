@@ -1,0 +1,7 @@
+Django>=5.2,<6
+msal>=1.31
+requests>=2.32
+dj-database-url>=2.3
+whitenoise>=6.8
+gunicorn>=23
+psycopg[binary]>=3.2

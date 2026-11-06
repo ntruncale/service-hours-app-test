@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load hours_extras %}
+{% block title %}Summary{% endblock %}
+{% block content %}
+{% include "dashboard/_nav.html" %}
+<div class="card table-wrap" style="padding:0"><table>
+  <thead><tr><th>Grade</th><th class="num">Students</th><th class="num">On track</th><th>Share on track</th><th class="num">Behind pace</th><th class="num">Approved hours this year</th></tr></thead>
+  <tbody>{% for g in summary.per_grade %}
+    <tr><td>Grade {{ g.grade }}</td><td class="num">{{ g.students }}</td><td class="num">{{ g.done }}</td>
+      <td style="min-width:140px"><div class="progress"><span style="width:{{ g.percent_done }}%"></span></div><span class="small muted">{{ g.percent_done }}%</span></td>
+      <td class="num">{{ g.behind }}</td><td class="num">{{ g.hours|hrs }}</td></tr>
+  {% endfor %}</tbody>
+</table></div>
+
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+<div class="card">
+  <h2 style="margin-top:0">Approved hours by month, {{ summary.year_label }}</h2>
+  <div class="bars">{% for m in summary.by_month %}
+    <span class="small">{{ m.month|date:"M Y" }}</span><div class="bar" style="width:{% widthratio m.hours summary.max_month 100 %}%"></div><span class="small num">{{ m.hours|hrs }}</span>
+  {% empty %}<span class="muted">No approved hours yet this year.</span>{% endfor %}</div>
+</div>
+<div class="card">
+  <h2 style="margin-top:0">Approved hours by type of service</h2>
+  <div class="bars">{% for c in summary.by_category %}
+    <span class="small">{{ c.category }}</span><div class="bar" style="width:{% widthratio c.hours summary.max_category 100 %}%"></div><span class="small num">{{ c.hours|hrs }}</span>
+  {% empty %}<span class="muted">No approved hours yet this year.</span>{% endfor %}</div>
+</div>
+</div>
+{% endblock %}

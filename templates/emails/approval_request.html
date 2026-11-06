@@ -1,0 +1,13 @@
+<div style="font-family:Arial,sans-serif;font-size:16px;line-height:1.5;color:#1d2430;max-width:560px">
+<p>Hello {{ entry.supervisor_name }},</p>
+<p><strong>{{ student.display_name }}</strong>, a student at {{ SCHOOL_NAME }}, listed you as the supervisor for this community service:</p>
+<table style="border-collapse:collapse;margin:12px 0">
+<tr><td style="padding:4px 12px 4px 0;color:#5b6574">Date</td><td>{{ entry.service_date|date:"F j, Y" }}</td></tr>
+<tr><td style="padding:4px 12px 4px 0;color:#5b6574">Hours</td><td><strong>{{ entry.hours|floatformat:"-2" }}</strong></td></tr>
+<tr><td style="padding:4px 12px 4px 0;color:#5b6574">Organization</td><td>{{ entry.organization }}</td></tr>
+<tr><td style="padding:4px 12px 4px 0;color:#5b6574;vertical-align:top">What they did</td><td>{{ entry.description }}</td></tr>
+</table>
+<p><a href="{{ url }}" style="display:inline-block;background:#1f5fbf;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Review and confirm</a></p>
+<p style="font-size:14px;color:#5b6574">No account is needed. The link works once and expires in {{ days }} days. If you don't know this student, ignore this email or choose "I can't confirm this".</p>
+<p>Thank you for supporting our students,<br>{{ SCHOOL_NAME }}</p>
+</div>

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load hours_extras %}
+{% block title %}My hours{% endblock %}
+{% block content %}
+<div class="actions" style="justify-content:space-between">
+  <div>
+    <h1>My service hours</h1>
+    <p class="sub">Class of {{ user.graduation_year }}{% if grade %} · Grade {{ grade }}{% endif %}</p>
+  </div>
+  <a class="btn" href="{% url 'hours:entry_new' %}">+ Log service</a>
+</div>
+
+<div class="card">
+  <div class="grid">
+    <div><div class="stat">{{ progress.approved|hrs }}</div><div class="stat-label">approved hours</div></div>
+    <div><div class="stat">{{ progress.required|hrs }}</div><div class="stat-label">required by end of this year</div></div>
+    <div><div class="stat">{{ progress.remaining|hrs }}</div><div class="stat-label">still needed</div></div>
+    <div><div class="stat">{{ progress.pending|hrs }}</div><div class="stat-label">waiting for supervisor</div></div>
+  </div>
+  <div class="progress {% if progress.done %}done{% endif %}" style="margin-top:16px" role="progressbar" aria-valuenow="{{ progress.percent }}" aria-valuemin="0" aria-valuemax="100" aria-label="Progress toward required hours"><span style="width: {{ progress.percent }}%"></span></div>
+  <p class="small muted" style="margin:8px 0 0">{% if progress.done %}You're on track. Nice work!{% else %}{{ progress.percent }}% of the hours required so far.{% endif %} Only hours your supervisor approves count.</p>
+</div>
+
+{% for label, items in years %}
+  <h2>{{ label }} school year</h2>
+  <div class="card">
+  {% for e in items %}
+    <div class="entry">
+      <div class="entry-head">
+        <div><strong>{{ e.organization }}</strong> · {{ e.hours|hrs }} h<br>
+          <span class="small muted">{{ e.service_date|date:"M j, Y" }} · {{ e.location }} · Supervisor: {{ e.supervisor_name }} ({{ e.supervisor_email }})</span></div>
+        <div>{% include "_status.html" %}</div>
+      </div>
+      <p class="small" style="margin:6px 0">{{ e.description }}</p>
+      {% with req=e.approval_requests.all.0 %}
+        {% if req.supervisor_comment %}<p class="small"><strong>Supervisor's note:</strong> {{ req.supervisor_comment }}</p>{% endif %}
+      {% endwith %}
+      {% if e.review_note %}<p class="small"><strong>Teacher's note:</strong> {{ e.review_note }}</p>{% endif %}
+      {% if e.is_editable %}
+      <div class="actions">
+        <a class="btn secondary small" href="{% url 'hours:entry_edit' e.pk %}">{% if e.status == 'declined' %}Fix and resubmit{% else %}Edit{% endif %}</a>
+        {% if e.status == 'pending' or e.status == 'expired' %}
+        <form class="inline" method="post" action="{% url 'hours:entry_resend' e.pk %}">{% csrf_token %}<button class="secondary small">Resend email</button></form>
+        {% endif %}
+        <form class="inline" method="post" action="{% url 'hours:entry_delete' e.pk %}" onsubmit="return confirm('Delete this entry?')">{% csrf_token %}<button class="danger small">Delete</button></form>
+      </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+  </div>
+{% empty %}
+  <div class="card center"><p>No service logged yet.</p><a class="btn" href="{% url 'hours:entry_new' %}">Log your first service</a></div>
+{% endfor %}
+{% endblock %}

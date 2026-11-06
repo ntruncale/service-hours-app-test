@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Thank you{% endblock %}
+{% block content %}
+<div class="narrow card center">
+  <h1>Thank you</h1>
+  {% if approved %}<p>You approved {{ entry.student.display_name }}'s service hours. We've let them know.</p>
+  {% else %}<p>You declined this entry. We've let {{ entry.student.display_name }} know so they can correct it.</p>{% endif %}
+  <p class="small muted">You can close this page.</p>
+</div>
+{% endblock %}

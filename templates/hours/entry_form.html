@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{% if entry %}Edit entry{% else %}Log service{% endif %}{% endblock %}
+{% block content %}
+<div class="narrow">
+<h1>{% if entry %}Edit entry{% else %}Log service{% endif %}</h1>
+<p class="sub">{% if entry %}Saving sends your supervisor a new confirmation email; the old link stops working.{% else %}After you save, we email your supervisor to confirm.{% endif %}</p>
+<form method="post" class="card" novalidate>{% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="form-grid">
+    {% include "_form_field.html" with field=form.service_date %}
+    {% include "_form_field.html" with field=form.hours %}
+    {% include "_form_field.html" with field=form.organization %}
+    {% include "_form_field.html" with field=form.location %}
+  </div>
+  {% include "_form_field.html" with field=form.category %}
+  {% include "_form_field.html" with field=form.description %}
+  <h2>Who supervised you?</h2>
+  <div class="form-grid">
+    {% include "_form_field.html" with field=form.supervisor_name %}
+    {% include "_form_field.html" with field=form.supervisor_email %}
+  </div>
+  {% include "_form_field.html" with field=form.supervisor_phone %}
+  <div class="actions" style="margin-top:20px">
+    <button>Save and email supervisor</button>
+    <a class="btn secondary" href="{% url 'hours:my_hours' %}">Cancel</a>
+  </div>
+</form>
+</div>
+{% endblock %}
